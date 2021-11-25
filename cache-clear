@@ -1,0 +1,3 @@
+#!/bin/bash
+# Clear the proxy disk cache, if used
+htcacheclean -l1b -t -p/var/cache/apache2/mod_cache_disk
