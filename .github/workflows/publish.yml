@@ -15,6 +15,6 @@ jobs:
       publish: "${{ needs.build.outputs.publish }}"
       tag:     "${{ needs.build.outputs.tag }}"
     secrets:
-      aws-access-key-id:     "${{ env.AWS_ACCESS_KEY_ID }}"
-      aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
-      epi_gpr_access_token:  "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"
+      aws_access_key_id: ${{ env.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      epi_gpr_access_token: ${{ secrets.EPI_GPR_ACCESS_TOKEN }}
