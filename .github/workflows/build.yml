@@ -1,0 +1,10 @@
+name: "Build Docker Image"
+on:
+  workflow_dispatch: {}
+  push: {}
+
+jobs:
+  build:
+    uses: "epimorphics/github-workflows/build.yml@reusable"
+    secrets:
+      epi_gpr_access_token: "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"

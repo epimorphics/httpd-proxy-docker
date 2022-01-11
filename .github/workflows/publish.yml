@@ -1,0 +1,20 @@
+name: "Publish to AWS Container Registry"
+on:
+  workflow_dispatch: {}
+  push: {}
+env:
+  AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}"
+
+jobs:
+  publish:
+    needs: "build"
+    uses:  "epimorphics/github-workflows/publish.yml@reusable"
+    with:
+      image:   "${{ needs.build.outputs.image }}"
+      publish: "${{ needs.build.outputs.publish }}"
+      tag:     "${{ needs.build.outputs.tag }}"
+    secrets:
+      aws-access-key-id:     "${{ env.AWS_ACCESS_KEY_ID }}"
+      aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
+      epi_gpr_access_token:  "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"
