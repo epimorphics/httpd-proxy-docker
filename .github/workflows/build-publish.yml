@@ -2,16 +2,12 @@ name: "Build & Publish Docker Image"
 on:
   workflow_dispatch: {}
   push: {}
-env:
-  AWS_ACCESS_KEY_ID:     "${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}"
-  AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}"
-  GPR_ACCESS_TOKEN:      "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"
 
 jobs:
   build:
     uses: "epimorphics/github-workflows/.github/workflows/build.yml@reusable"
     secrets:
-      epi_gpr_access_token: "${{ env.GPR_ACCESS_TOKEN }}"
+      epi_gpr_access_token: "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"
   publish:
     needs: "build"
     uses:  "epimorphics/github-workflows/.github/workflows/publish.yml@reusable"
@@ -20,6 +16,6 @@ jobs:
       publish: "${{ needs.build.outputs.publish }}"
       tag:     "${{ needs.build.outputs.tag }}"
     secrets:
-      aws_access_key_id: "${{ env.AWS_ACCESS_KEY_ID }}"
-      aws_secret_access_key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
-      epi_gpr_access_token: "${{ env.GPR_ACCESS_TOKEN }}"
+      aws_access_key_id:     "${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}"
+      aws_secret_access_key: "${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}"
+      epi_gpr_access_token:  "${{ secrets.EPI_GPR_ACCESS_TOKEN }}"
