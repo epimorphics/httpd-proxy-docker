@@ -9,7 +9,7 @@ env:
 jobs:
   publish:
     needs: "build"
-    uses:  "epimorphics/github-workflows/publish.yml@reusable"
+    uses:  "epimorphics/github-workflows/.github/workflows/publish.yml@reusable"
     with:
       image:   "${{ needs.build.outputs.image }}"
       publish: "${{ needs.build.outputs.publish }}"
