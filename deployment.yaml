@@ -1,4 +1,6 @@
 version: 2
 name:  epimorphics/httpd-proxy-oauth
 deployments:
+  - branch: main
+    publish: stable
   - branch: "[a-zA-Z0-9]+"
