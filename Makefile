@@ -1,41 +1,47 @@
-# build and push docker image to LR ECR repository
-REPO?=293385631482.dkr.ecr.eu-west-1.amazonaws.com
-IMAGE?=epimorphics/httpd-proxy-oauth
-VERSION?=1.4
-TAG?=$(REPO)/$(IMAGE):$(VERSION)
+.PHONY: image publish tag vars
 
-ARCHIVE=https://mod-auth-openidc.org/download
+ACCOUNT?=$(shell aws sts get-caller-identity | jq -r .Account)
+NAME?=$(shell awk -F: '$$1=="name" {print $$2}' deployment.yaml | sed -e 's/\s//g')
+ECR?=${ACCOUNT}.dkr.ecr.eu-west-1.amazonaws.com
+IMAGE?=${NAME}
+REPO?=${ECR}/${IMAGE}
 
-MOD_AUTH_OPENIDC=libapache2-mod-auth-openidc_2.4.3-1~buster+1_amd64.deb
-LIBCJOSE0=libcjose0_0.6.1.5-1~buster+1_amd64.deb
-
-DOWNLOADS= ${MOD_AUTH_OPENIDC} ${LIBCJOSE0}
-
-.PHONY: image
-image: downloads
-	@docker build --build-arg MOD_AUTH_OPENIDC_DEB=${MOD_AUTH_OPENIDC} --build-arg LIBCJOSE0=${LIBCJOSE0} -t "$(TAG)" . 
+BRANCH:=$(shell git rev-parse --abbrev-ref HEAD)
+COMMIT:=$(shell git rev-parse --short HEAD)
+VERSION:=1.5.0
+TAG?=${VERSION}
 
 all: publish
 
-.PHONY: tag
+image:
+	@echo Building ${IMAGE}:${TAG} ...
+	@docker build \
+    --build-arg build_date=`date -Iseconds` \
+    --build-arg image_name=${IMAGE} \
+    --build-arg git_branch=${BRANCH} \
+    --build-arg git_commit_hash=${COMMIT} \
+		--build-arg github_run_number=${GITHUB_RUN_NUMBER} \
+		--build-arg version=${VERSION} \
+		-t ${IMAGE}:${TAG} . 
+	@echo Tagging ${IMAGE}:latest ...
+	@docker tag ${IMAGE}:${TAG} ${IMAGE}:${VERSION}
+	@docker tag ${IMAGE}:${TAG} ${IMAGE}:latest
+
+publish: image
+	@echo Tagging ${REPO}:${TAG} ...
+	@docker tag ${IMAGE}:${TAG} ${REPO}:${TAG}
+	@echo Publishing ${REPO}:${TAG} ...
+	@docker push ${REPO}:${TAG}
+	@echo Done.
+
 tag:
-	@echo "$(VERSION)"
+	@echo ${TAG}
 
-.PHONY: push
-push:
-	docker push "$(TAG)"
-	
-.PHONY: publish
-publish: image push
-
-downloads: ${DOWNLOADS}
-
-${MOD_AUTH_OPENIDC}:
-	@wget ${ARCHIVE}/$@
-
-${LIBCJOSE0}:
-	@wget ${ARCHIVE}/$@
-	
-clean:
-	@rm -f ${DOWNLOADS}
-
+vars:
+	@echo NAME:${NAME}
+	@echo VERSION:${VERSION}
+	@echo BRANCH:${BRANCH}
+	@echo COMMIT:${COMMIT}
+	@echo IMAGE:${IMAGE}
+	@echo REPO:${REPO}
+	@echo TAG:${TAG}

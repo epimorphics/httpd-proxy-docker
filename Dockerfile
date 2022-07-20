@@ -1,12 +1,15 @@
-FROM bitnami/apache:2.4-debian-10
-ARG MOD_AUTH_OPENIDC_DEB 
-ARG LIBCJOSE0
+FROM bitnami/apache:2.4.54-debian-11-r13
 
-## Install openidc
+ARG image_name
+ARG build_date
+ARG git_branch
+ARG git_commit_hash
+ARG github_run_number
+ARG version
+
 USER 0
-RUN install_packages libjansson4 libhiredis0.14 apache2-api-20120211 apache2-bin
-COPY ${LIBCJOSE0} ${MOD_AUTH_OPENIDC_DEB} /var/opt/
-RUN dpkg -i /var/opt/libcjose0_0.6.1.5-1~buster+1_amd64.deb /var/opt/libapache2-mod-auth-openidc_2.4.3-1~buster+1_amd64.deb
+RUN install_packages libjansson4 libhiredis0.14 libapache2-mod-qos libapache2-mod-auth-openidc apache2-bin
+RUN sed -i -e 's/mpm_prefork/mpm_worker/g' /opt/bitnami/apache/conf/httpd.conf
 
 ## Cache set up
 COPY cache-clear /usr/local/bin/cache-clear
@@ -15,3 +18,10 @@ USER 1001
 
 ## Load extra modules
 COPY mods-enabled.conf /opt/bitnami/apache/conf/vhosts/mods-enabled.conf
+
+LABEL com.epimorphics.name=$image_name \
+      com.epimorphics.branch=$git_branch \
+      com.epimorphics.build=$github_run_number \
+      com.epimorphics.created=$build_date \
+      com.epimorphics.commit=$git_commit_hash \
+      com.epimorphics.version=$version
