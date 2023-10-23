@@ -1,4 +1,4 @@
-FROM bitnami/apache:2.4.54-debian-11-r13
+FROM bitnami/apache:2.4.58-debian-11-r0
 
 ARG image_name
 ARG build_date

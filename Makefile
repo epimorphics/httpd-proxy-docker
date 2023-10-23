@@ -8,7 +8,7 @@ REPO?=${ECR}/${IMAGE}
 
 BRANCH:=$(shell git rev-parse --abbrev-ref HEAD)
 COMMIT:=$(shell git rev-parse --short HEAD)
-VERSION:=1.5.0
+VERSION:=1.5.1
 TAG?=${VERSION}
 
 all: publish
