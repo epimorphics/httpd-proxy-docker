@@ -3,4 +3,6 @@ name:  epimorphics/httpd-proxy-oauth
 deployments:
   - branch: main
     publish: stable
+  - branch: geo-build
+    publish: geo
   - branch: "[a-zA-Z0-9]+"

@@ -16,7 +16,6 @@ all: publish
 image:
 	@echo Building ${IMAGE}:${TAG} ...
 	@docker build \
-    --build-arg build_date=`date -Iseconds` \
     --build-arg image_name=${IMAGE} \
     --build-arg git_branch=${BRANCH} \
     --build-arg git_commit_hash=${COMMIT} \
